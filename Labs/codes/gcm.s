@@ -1,0 +1,53 @@
+;------------------------------------------------------------------------
+; ???main ??
+; ??INPUT ??
+; ????????????????????
+; ????????????
+;------------------------------------------------------------------------
+		
+		;*** ???
+		.data		
+
+		;*** Prompts for input
+Prompt1:	.asciiz 	"First Number:"
+Prompt2:	.asciiz 	"Second Number: "
+
+		;*** Data for printf-Trap
+PrintfFormat:	.asciiz 	"gcM=%d\n\n"
+		.align		2
+PrintfPar:      .word		PrintfFormat
+PrintfValue:	.space		4
+
+
+		.text
+		.global	main
+main:
+		;*** ??????????R1 ? R2 ???
+		;*** ?????????
+		addi	r1,r0,Prompt1
+		jal     InputUnsigned	; ????????R1
+		add     r2,r1,r0        ; R2 <- R1
+		addi	r1,r0,Prompt2
+		jal     InputUnsigned	; ??????????R1
+
+Loop:                           ; *** ??R1 ? R2????????
+		seq     r3,r1,r2        ; R1 == R2 ?
+		bnez	r3,Result		; ???Result
+		sgt     r3,r1,r2        ; R1 > R2 ?
+		bnez	r3,r1Greater	; ???r1Greater
+		
+r2Greater:	;*** r2 <-- r2 - r1 
+		sub		r2,r2,r1
+		j		Loop			; ???Loop
+
+r1Greater:	;*** r1 <-- r1 - r2
+		sub		r1,r1,r2
+		j		Loop			; ???Loop
+
+Result: 	;*** ?R1 ????????
+		sw		PrintfValue,r1
+		addi	r14,r0,PrintfPar
+		trap	5
+
+		;*** end
+		trap	0
